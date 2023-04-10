@@ -9,9 +9,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const [state, dispatch] = useReducer(AuthReducer, initialState);
-  
+
+  const isAuthenticated = (data) => {
+    dispatch({
+      type: "is_authenticated",
+      payload: data,
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ isSignedIn: state.isSignedIn }}>
+    <AuthContext.Provider
+      value={{ isSignedIn: state.isSignedIn, isAuthenticated }}
+    >
       {children}
     </AuthContext.Provider>
   );
