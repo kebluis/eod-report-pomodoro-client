@@ -5,11 +5,9 @@ const AuthReducer = (state, action) => {
         ...state,
         isSignedIn: action.payload,
       };
-      break;
 
     default:
       return state;
-      break;
   }
 };
 
