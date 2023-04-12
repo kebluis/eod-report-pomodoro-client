@@ -11,7 +11,11 @@ function App() {
   const { isSignedIn } = useContext(AuthContext);
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
         {isSignedIn ? (
           <Stack.Screen name="Dashboard" component={DashboardScreen} />
         ) : (
