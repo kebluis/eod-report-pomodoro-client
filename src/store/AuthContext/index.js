@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const initialState = {
-    isSignedIn: false,
+    isSignedIn: true,
   };
 
   const [state, dispatch] = useReducer(AuthReducer, initialState);
