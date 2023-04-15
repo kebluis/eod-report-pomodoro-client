@@ -8,6 +8,7 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+*.log
 web-build/
 
 # macOS
@@ -17,3 +18,9 @@ web-build/
 .metro-health-check*
 
 environment.js
+
+
+# Node
+.nvm
+package-lock.json
+yarn-lock.json
