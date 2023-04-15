@@ -35,6 +35,8 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     };
 
     const deductSeconds = async () => {
+      // timeout time should be 1000 ms rather than 300 ms. 
+      // This is just currently the settings to not actually wait for a whole minute every time we test the app
       await timeout(300);
       setSeconds((prev) => --prev);
     };
