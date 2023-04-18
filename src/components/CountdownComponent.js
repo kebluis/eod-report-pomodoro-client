@@ -43,27 +43,28 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
   }, []);
 
   const startCountdown = async () => {
-    
     selectionAsync();
     setStart(true);
-    await Notifications.setNotificationChannelAsync('new-emails', {
-      name: 'E-mail notifications',
-      importance: Notifications.AndroidImportance.HIGH,
-      sound: 'alarm.wav', // <- for Android 8.0+, see channelId property below
+    await Notifications.setNotificationChannelAsync("countdown-over", {
+      name: "Countdown alarm",
+      importance: Notifications.AndroidImportance.MAX,
+      sound: "alarm.wav", // <- for Android 8.0+, see channelId property below
+      lightColor: "#FF231F7C",
+      vibrationPattern: [0, 250, 250, 250],
     });
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "Time's Up!",
         body: "Comeback and set your Break time",
+        sound: "alarm.wav",
       },
-      trigger: { seconds: _minutes * 60 + _seconds, channelId:'new-emails' },
+      trigger: { seconds: 10, channelId: "countdown-over" },
     });
   };
 
   const onFinishCountDown = () => {
-    setTimerId(new Date().getTime().toString())
-    alarmSound.replayAsync();
     setStart(false);
+    alarmSound.replayAsync();
     setShow(true);
   };
 
@@ -72,6 +73,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
       <ConfirmModal
         onNext={() => {
           alarmSound.pauseAsync();
+          setTimerId(new Date().getTime().toString());
           setShow(false);
           setStart(false);
         }}
@@ -85,9 +87,15 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         cancelText="Stop"
       />
       <CountDown
-      id={timerId}
-        until={_minutes * 60 + _seconds}
-        size={20}
+        digitStyle={globalStyles.bgTransparent}
+        digitTxtStyle={[globalStyles.whiteText, styles.counter]}
+        separatorStyle={globalStyles.whiteText}
+        timeToShow={["M", "S"]}
+        timeLabels={{ m: null, s: null }}
+        showSeparator
+        id={timerId}
+        until={10}
+        size={48}
         running={start && !show}
         onFinish={onFinishCountDown}
       />
@@ -134,7 +142,6 @@ const styles = StyleSheet.create({
   },
   counter: {
     fontSize: 80,
-    textAlign: "center",
   },
   animationContainer: {
     alignItems: "center",
