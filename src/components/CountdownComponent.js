@@ -88,7 +88,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
       />
       <CountDown
         digitStyle={globalStyles.bgTransparent}
-        digitTxtStyle={[globalStyles.whiteText, styles.counter]}
+        digitTxtStyle={{...globalStyles.whiteText, ...styles.counter}}
         separatorStyle={globalStyles.whiteText}
         timeToShow={["M", "S"]}
         timeLabels={{ m: null, s: null }}
