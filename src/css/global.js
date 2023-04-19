@@ -4,6 +4,9 @@ export default StyleSheet.create({
   whiteText: {
     color: "#fff",
   },
+  bgTransparent: {
+    backgroundColor: "rgba(0,0,0,0)",
+  },
   vMargin1: {
     marginVertical: 16,
   },

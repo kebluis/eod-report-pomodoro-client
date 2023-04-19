@@ -6,11 +6,24 @@ import { Audio } from "expo-av";
 
 import globalStyles from "../css/global";
 import ConfirmModal from "./modals/ConfirmModal.js";
+import CountDown from "react-native-countdown-component";
+import * as Notifications from "expo-notifications";
+
+// First, set the handler that will cause the notification
+// to show the alert
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
   const animation = useRef(null);
-  const [minutes, setMinutes] = useState(_minutes);
-  const [seconds, setSeconds] = useState(_seconds);
+
+  const [timerId, setTimerId] = useState(new Date().getTime().toString());
   const [start, setStart] = useState(false);
   const [show, setShow] = useState(false);
   const [alarmSound, setAlarmSound] = useState(null);
@@ -25,57 +38,42 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
 
     init();
     return () => {
-      if(!!alarmSound) alarmSound.unloadAsync();
+      if (!!alarmSound) alarmSound.unloadAsync();
     };
   }, []);
 
-  useEffect(() => {
-    const timeout = (ms) => {
-      return new Promise((resolve) => setTimeout(resolve, ms));
-    };
-
-    const deductSeconds = async () => {
-      // timeout time should be 1000 ms rather than 300 ms. 
-      // This is just currently the settings to not actually wait for a whole minute every time we test the app
-      await timeout(300);
-      setSeconds((prev) => --prev);
-    };
-
-    const deductMinutes = async () => {
-      await timeout(1000);
-      if (minutes > 0) {
-        setMinutes((prev) => --prev);
-        setSeconds(59);
-      } else {
-        setMinutes(_minutes);
-        setSeconds(_seconds);
-        alarmSound.replayAsync();
-        setShow(true);
-      }
-    };
-    if (start) seconds === 0 ? deductMinutes() : deductSeconds();
-  }, [seconds]);
-
-  const startCountdown = () => {
+  const startCountdown = async () => {
     selectionAsync();
     setStart(true);
-    setTimeout(() => {
-      setMinutes((prev) => --prev);
-      setSeconds(59);
-    }, 1000);
+    await Notifications.setNotificationChannelAsync("countdown-over", {
+      name: "Countdown alarm",
+      importance: Notifications.AndroidImportance.MAX,
+      sound: "alarm.wav", // <- for Android 8.0+, see channelId property below
+      lightColor: "#FF231F7C",
+      vibrationPattern: [0, 250, 250, 250],
+    });
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Time's Up!",
+        body: "Comeback and set your Break time",
+        sound: "alarm.wav",
+      },
+      trigger: { seconds: 10, channelId: "countdown-over" },
+    });
   };
 
-  const formattedTime = (time) =>
-    time.toLocaleString("en-US", {
-      minimumIntegerDigits: 2,
-      useGrouping: false,
-    });
+  const onFinishCountDown = () => {
+    setStart(false);
+    alarmSound.replayAsync();
+    setShow(true);
+  };
 
   return (
     <View style={[globalStyles.vPadding1, styles.wrapper]}>
       <ConfirmModal
         onNext={() => {
           alarmSound.pauseAsync();
+          setTimerId(new Date().getTime().toString());
           setShow(false);
           setStart(false);
         }}
@@ -88,9 +86,19 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         nextText="Break"
         cancelText="Stop"
       />
-      <Text style={[globalStyles.whiteText, styles.counter]}>
-        {formattedTime(minutes)}:{formattedTime(seconds)}
-      </Text>
+      <CountDown
+        digitStyle={globalStyles.bgTransparent}
+        digitTxtStyle={{...globalStyles.whiteText, ...styles.counter}}
+        separatorStyle={globalStyles.whiteText}
+        timeToShow={["M", "S"]}
+        timeLabels={{ m: null, s: null }}
+        showSeparator
+        id={timerId}
+        until={10}
+        size={48}
+        running={start && !show}
+        onFinish={onFinishCountDown}
+      />
 
       {start ? (
         show ? (
@@ -134,7 +142,6 @@ const styles = StyleSheet.create({
   },
   counter: {
     fontSize: 80,
-    textAlign: "center",
   },
   animationContainer: {
     alignItems: "center",
