@@ -2,12 +2,14 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import globalStyles from "../css/global";
 import CountdownComponent from "../components/CountdownComponent";
+import TasklistComponent from "../components/TasklistComponent";
 
 const DashboardScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
         <CountdownComponent />
+        <TasklistComponent />
       </View>
     </View>
   );
