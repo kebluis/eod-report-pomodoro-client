@@ -18,6 +18,7 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    priority: Notifications.AndroidNotificationPriority.MAX,
   }),
 });
 
@@ -47,22 +48,36 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
   const startCountdown = async () => {
     startTimer.current?.reset();
     doneTask.current?.reset();
+    const settings = await Notifications.getPermissionsAsync();
     selectionAsync();
     setStart(true);
-    await Notifications.setNotificationChannelAsync("countdown-over", {
+    const notifChannel = await Notifications.setNotificationChannelAsync("countdown-over", {
       name: "Countdown alarm",
       importance: Notifications.AndroidImportance.MAX,
       sound: "alarm.wav", // <- for Android 8.0+, see channelId property below
       lightColor: "#FF231F7C",
       vibrationPattern: [0, 250, 250, 250],
+      bypassDnd: true,
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+      enableLights: true,
+      enableVibrate: true,
+      showBadge: true,
+      audioAttributes: {
+        contentType: Notifications.AndroidAudioContentType.MUSIC,
+        usage: Notifications.AndroidAudioUsage.ALARM,
+      }
     });
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "Time's Up!",
         body: "Comeback and set your Break time",
         sound: "alarm.wav",
+        priority: Notifications.AndroidNotificationPriority.MAX,
+        color:"red"
       },
-      trigger: { seconds: 10, channelId: "countdown-over" },
+      trigger: { seconds: 10, 
+        channelId: "countdown-over" 
+      },
     });
   };
 
@@ -114,14 +129,9 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
 
       {start && !show && (
         <View style={styles.animationContainer}>
-          <FontAwesome
-            name="pause-circle"
-            size={48}
-            color="white"
+          <FontAwesome name="pause-circle" size={48} color="white" />
 
-          />
-
-          <View >
+          <View>
             <LottieView
               autoPlay
               ref={startTimer}

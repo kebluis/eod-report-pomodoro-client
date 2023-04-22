@@ -10,8 +10,17 @@ export default StyleSheet.create({
   vMargin1: {
     marginVertical: 16,
   },
+  hMargin1: {
+    marginHorizontal: 16,
+  },
   vPadding1: {
     paddingVertical: 16,
+  },
+  hPadding1: {
+    paddingHorizontal: 16,
+  },
+  fullWidth: {
+    width: "100%",
   },
   wrapper: {
     backgroundColor: "#ffffff1a",

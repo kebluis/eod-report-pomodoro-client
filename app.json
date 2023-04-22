@@ -10,6 +10,8 @@
       [
         "expo-notifications",
         {
+          "icon": "./assets/icon.png",
+          "color": "yellow",
           "sounds": [
             "./assets/alarm.wav"
           ]
@@ -32,6 +34,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "useNextNotificationsApi": true,
       "package": "com.kebluis.eosreportintegratedpomodoroappclient"
     },
     "web": {
