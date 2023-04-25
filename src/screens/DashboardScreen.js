@@ -1,9 +1,9 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import globalStyles from "../css/global";
 import CountdownComponent from "../components/CountdownComponent";
 import TasklistComponent from "../components/TasklistComponent";
 import LoadingComponent from "../components/LoadingComponent";
+import ServiceNavigatorComponent from "../components/ServiceNavigatorComponent";
 
 const DashboardScreen = ({isLoading}) => {
   return (
@@ -12,6 +12,7 @@ const DashboardScreen = ({isLoading}) => {
         <LoadingComponent isMain/>
       ) : (
         <View style={styles.wrapper}>
+          <ServiceNavigatorComponent />
           <CountdownComponent />
           <TasklistComponent />
         </View>
