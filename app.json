@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "com.kebluis.eosreportintegratedpomodoroappclient",
     "plugins": [
       [
         "expo-notifications",
@@ -25,7 +26,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kebluis.eosreportintegratedpomodoroappclient"
     },
     "android": {
       "adaptiveIcon": {
