@@ -38,4 +38,12 @@ export default StyleSheet.create({
     height: 100,
     marginLeft: 4,
   },
+  centered: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+  },
+  rowDirection: {
+    display: "flex",
+    flexDirection: "row",
+  },
 });
