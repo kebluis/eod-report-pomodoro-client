@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, View } from "react-native";
 import CountdownComponent from "../components/CountdownComponent";
 import TasklistComponent from "../components/TasklistComponent";
 import LoadingComponent from "../components/LoadingComponent";
 import ServiceNavigatorComponent from "../components/ServiceNavigatorComponent";
+import { ServiceContext, ServiceProvider } from "../store/ServiceContext";
 
 const DashboardScreen = ({ isLoading }) => {
-  const [isBreak, setIsBreak] = useState(false);
-  const getBackground = () => isBreak ? { backgroundColor: "#38858a" } : { backgroundColor: "#ba4949" };
+  const { isBreak } = useContext(ServiceContext);
+  const getBackground = () =>
+    isBreak ? { backgroundColor: "#38858a" } : { backgroundColor: "#ba4949" };
 
   return (
     <View style={[styles.container, getBackground()]}>
@@ -15,7 +17,7 @@ const DashboardScreen = ({ isLoading }) => {
         <LoadingComponent isMain />
       ) : (
         <View style={styles.wrapper}>
-          <ServiceNavigatorComponent onBreak={(_isBreak) => setIsBreak(_isBreak)}/>
+          <ServiceNavigatorComponent />
           <CountdownComponent />
           <TasklistComponent />
         </View>
@@ -34,4 +36,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DashboardScreen;
+export default () => (
+  <ServiceProvider>
+    <DashboardScreen />
+  </ServiceProvider>
+);

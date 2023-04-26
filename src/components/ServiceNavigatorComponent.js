@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import globalStyles from "../css/global";
+import { ServiceContext } from "../store/ServiceContext";
 
-const ServiceNavigatorComponent = ({onBreak}) => {
+const ServiceNavigatorComponent = () => {
+  const { isBreak, toggleService } = useContext(ServiceContext);
   const { centered, rowDirection, whiteText, vPadding1, hPadding1 } =
     globalStyles;
-
-  const [breakActive, setBreakActive] = useState(false);
-
-  useEffect(() => {
-    onBreak(breakActive)
-  }, [breakActive])
 
   const getTextColor = (enable, color) => {
     return enable ? { color } : { ...whiteText };
@@ -22,16 +18,16 @@ const ServiceNavigatorComponent = ({onBreak}) => {
   return (
     <View style={[centered, rowDirection, styles.separator]}>
       <TouchableOpacity
-        style={[vPadding1, hPadding1, getButtonStyle(!breakActive)]}
-        onPress={() => setBreakActive(false)}
+        style={[vPadding1, hPadding1, getButtonStyle(!isBreak)]}
+        onPress={() => toggleService(false)}
       >
-        <Text style={getTextColor(!breakActive, "#ba4949")}>Pomodoro</Text>
+        <Text style={getTextColor(!isBreak, "#ba4949")}>Pomodoro</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[vPadding1, hPadding1, getButtonStyle(breakActive)]}
-        onPress={() => setBreakActive(true)}
+        style={[vPadding1, hPadding1, getButtonStyle(isBreak)]}
+        onPress={() => toggleService(true)}
       >
-        <Text style={getTextColor(breakActive, "#38858a")}>Break</Text>
+        <Text style={getTextColor(isBreak, "#38858a")}>Break</Text>
       </TouchableOpacity>
     </View>
   );
@@ -54,7 +50,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderStyle: "solid",
     borderBottomColor: "#fff",
-    marginBottom: 8
+    marginBottom: 8,
   },
 });
 
