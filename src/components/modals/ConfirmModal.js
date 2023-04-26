@@ -33,7 +33,7 @@ const ConfirmModal = ({
 
 const styles = StyleSheet.create({
   modalContent: {
-    height: "20%",
+    height: "50%",
     width: "100%",
     backgroundColor: "#25292e",
     borderTopRightRadius: 18,
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   titleContainer: {
-    height: "25%",
+    height: "15%",
     backgroundColor: "#464C55",
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     alignItems: 'center',
-    marginVertical: 30,
+    marginVertical: 24,
     marginHorizontal: 36,
     padding: 24,
     borderRadius: 10,
