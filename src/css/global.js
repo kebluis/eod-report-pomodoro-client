@@ -39,7 +39,7 @@ export default StyleSheet.create({
     marginLeft: 4,
   },
   centered: {
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "center",
   },
   rowDirection: {
