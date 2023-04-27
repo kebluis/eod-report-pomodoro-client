@@ -46,4 +46,22 @@ export default StyleSheet.create({
     display: "flex",
     flexDirection: "row",
   },
+  containerBg: {
+    pomo: {
+        backgroundColor: "#ba4949",
+        color: 'white',
+    },
+    break: {
+        backgroundColor: "#38858a",
+        color: 'white',
+    },
+  },
+  button: {
+    pomo: {
+        backgroundColor: "#c15c5c",
+    },
+    break: {
+        backgroundColor: "#4c9196",
+    },
+  }
 });
