@@ -34,15 +34,8 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         flexWrap:'wrap',
     },
-    pomodoroTheme: {
-        backgroundColor: "#c15c5c",
-        color: "white"
-    },
-    breakTheme: {
-        backgroundColor: "#82b5f0",
-        color: "white",
-    },
     emailListText: {
+        color: "white",
         width: "100%",
         fontSize: 20,
     },
