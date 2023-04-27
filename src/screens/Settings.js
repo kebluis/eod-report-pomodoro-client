@@ -184,10 +184,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#82b5f0",
         color: "white",
     },
-    emailListText: {
-        width: "100%",
-        fontSize: 20,
-    },
     emailAdd: {
         paddingTop: 15,
         right: 5,
