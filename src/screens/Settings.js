@@ -1,9 +1,18 @@
 import React, {useState, useContext} from 'react';
-import {Modal, StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
+import {
+    Modal,
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    TouchableOpacity,
+    FlatList,
+} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Icon from "@expo/vector-icons/AntDesign";
 import { ServiceContext } from "../store/ServiceContext";
 import globalStyles from "../css/global";
+import EmailRow from "../components/EmailRow";
 
 const Settings = ({modalVisible, hideModal}) => {
     const [toEmailType, setToEmailType] = useState("to");
@@ -24,11 +33,7 @@ const Settings = ({modalVisible, hideModal}) => {
     const { isBreak } = useContext(ServiceContext);
     const mode = isBreak ? 'break' : 'pomo';
 
-    const addEmail = email => {
-        let tempEmails = [...emails];
-        tempEmails.push(email);
-        setEmails(tempEmails);
-    };
+    const addEmail = email => setEmails([...emails, email]);
 
     const removeEmail = indexToRemove => {
         let tempEmails = emails.filter((value, index) => {
@@ -42,7 +47,7 @@ const Settings = ({modalVisible, hideModal}) => {
         // todo: validate email
 
         if (toEmail.length) {
-            let email = {
+            const email = {
                 email: toEmail,
                 type: toEmailType
             };
@@ -53,22 +58,12 @@ const Settings = ({modalVisible, hideModal}) => {
         setToEmail("");
     }
 
-    const emailList = emails.map((value, index) => (
-        <View key={index} style={{
-        flexDirection:'row',
-        flexWrap:'wrap',
-        height: 50,
-        width: "100%",
-        textAlign: "left"
-    }}>
-            <Text style={[{width: "100%", fontSize: 20}, globalStyles.containerBg[mode]]}>
-                {value.email}
-            </Text>
-            <TouchableOpacity onPress={() => {removeEmail(index)}} style={{paddingTop: 15, right: 0, top: -15, position: "absolute"}}>
-                <Text><Icon name="deleteuser" size={25} color="white" /></Text>
-            </TouchableOpacity>
-        </View>
-    ));
+    const emailList = (
+        <FlatList
+            data={emails}
+            renderItem={({item, index}) => <EmailRow theme={mode} item={item} index={index} removeEmail={removeEmail} />}
+        />
+    );
 
     // TODO add submit button for API integration
     return (
@@ -91,10 +86,6 @@ const Settings = ({modalVisible, hideModal}) => {
                     <View style={styles.inputContainer}>
                         <Text style={globalStyles.containerBg[mode]}>Short break</Text>
                         <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="break timer" placeholderTextColor="white" />
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <Text style={globalStyles.containerBg[mode]}>Long break</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="long break timer" placeholderTextColor="white" />
                     </View>
                 </View>
                 <View style={styles.formContainer}>
@@ -122,7 +113,7 @@ const Settings = ({modalVisible, hideModal}) => {
                             <Picker.Item label="Cc" value="cc" />
                             <Picker.Item label="Bcc" value="bcc" />
                         </Picker>
-                        <TouchableOpacity onPress={addEmailToList} style={{paddingTop: 15}}>
+                        <TouchableOpacity onPress={addEmailToList} style={styles.emailAdd}>
                             <Text><Icon name="adduser" size={25} color="white" /></Text>
                         </TouchableOpacity>
                     </View>
@@ -146,6 +137,7 @@ const styles = StyleSheet.create({
         fontSize: 50,
         fontWeight: "bold",
         color: "white",
+        marginHorizontal: 16
     },
     inputContainer: {
         width: "30%",
@@ -177,7 +169,7 @@ const styles = StyleSheet.create({
         height: 40,
     },
     toDropDown: {
-        width: 120,
+        width: "30%",
         height: 40,
     },
     emailList: {
@@ -190,8 +182,18 @@ const styles = StyleSheet.create({
     },
     breakTheme: {
         backgroundColor: "#82b5f0",
-        color: "white"
-    }
+        color: "white",
+    },
+    emailListText: {
+        width: "100%",
+        fontSize: 20,
+    },
+    emailAdd: {
+        paddingTop: 15,
+        right: 5,
+        top: 0,
+        position: "absolute",
+    },
 });
 
 export default Settings;
