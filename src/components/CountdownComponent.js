@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import React, { useEffect, useState, useRef, useContext } from "react";
+import { View, StyleSheet } from "react-native";
 import LottieView from "lottie-react-native";
 import { selectionAsync } from "expo-haptics";
 import { Audio } from "expo-av";
@@ -9,6 +9,8 @@ import globalStyles from "../css/global";
 import ConfirmModal from "./modals/ConfirmModal.js";
 import CountDown from "react-native-countdown-component";
 import * as Notifications from "expo-notifications";
+import { ServiceContext } from "../store/ServiceContext";
+import { BREAK, NOTIFICATION, POMODORO, STOP } from "../constants/global";
 
 // First, set the handler that will cause the notification
 // to show the alert
@@ -23,6 +25,8 @@ Notifications.setNotificationHandler({
 });
 
 const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
+  const { isBreak, toggleService } = useContext(ServiceContext);
+
   const startTimer = useRef(null);
   const doneTask = useRef(null);
 
@@ -48,11 +52,10 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
   const startCountdown = async () => {
     startTimer.current?.reset();
     doneTask.current?.reset();
-    const settings = await Notifications.getPermissionsAsync();
     selectionAsync();
     setStart(true);
-    const notifChannel = await Notifications.setNotificationChannelAsync("countdown-over", {
-      name: "Countdown alarm",
+    await Notifications.setNotificationChannelAsync("countdown-over", {
+      name: NOTIFICATION.title,
       importance: Notifications.AndroidImportance.MAX,
       sound: "alarm.wav", // <- for Android 8.0+, see channelId property below
       lightColor: "#FF231F7C",
@@ -65,19 +68,19 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
       audioAttributes: {
         contentType: Notifications.AndroidAudioContentType.MUSIC,
         usage: Notifications.AndroidAudioUsage.ALARM,
-      }
+      },
     });
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Time's Up!",
-        body: "Comeback and set your Break time",
+        title: NOTIFICATION.timeUp,
+        body: isBreak
+          ? NOTIFICATION.breakMsg
+          : NOTIFICATION.pomoMsg,
         sound: "alarm.wav",
         priority: Notifications.AndroidNotificationPriority.MAX,
-        color:"red"
+        color: "red",
       },
-      trigger: { seconds: 10, 
-        channelId: "countdown-over" 
-      },
+      trigger: { seconds: 10, channelId: "countdown-over" },
     });
   };
 
@@ -88,29 +91,40 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     alarmSound.replayAsync();
   };
 
+  const resetAlarm = () => {
+    alarmSound.pauseAsync();
+    setTimerId(new Date().getTime().toString());
+    setShow(false);
+  };
+
   return (
     <View style={[globalStyles.vPadding1, globalStyles.wrapper]}>
       <ConfirmModal
         onNext={() => {
-          alarmSound.pauseAsync();
-          setTimerId(new Date().getTime().toString());
-          setShow(false);
+          toggleService(!isBreak);
+          resetAlarm()
         }}
-        onCancel={() => {
-          alarmSound.pauseAsync();
-          setShow(false);
-        }}
+        onCancel={resetAlarm}
         isVisible={show}
-        nextText="Break"
-        cancelText="Stop"
+        nextText={`${isBreak ? POMODORO : BREAK}`}
+        cancelText={STOP}
       >
         <View style={styles.animationContainer}>
-          <LottieView
-            autoPlay
-            ref={doneTask}
-            style={globalStyles.doneAnimation}
-            source={require("../../assets/done.json")}
-          />
+          {isBreak ? (
+            <LottieView
+              autoPlay
+              ref={doneTask}
+              style={globalStyles.doneAnimation}
+              source={require("../../assets/meditatingWork.json")}
+            />
+          ) : (
+            <LottieView
+              autoPlay
+              ref={doneTask}
+              style={globalStyles.doneAnimation}
+              source={require("../../assets/done.json")}
+            />
+          )}
         </View>
       </ConfirmModal>
       <CountDown
@@ -132,12 +146,21 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
           <FontAwesome name="pause-circle" size={48} color="white" />
 
           <View>
-            <LottieView
-              autoPlay
-              ref={startTimer}
-              style={globalStyles.startAnimation}
-              source={require("../../assets/backToSchool.json")}
-            />
+            {!isBreak ? (
+              <LottieView
+                autoPlay
+                ref={startTimer}
+                style={globalStyles.startAnimation}
+                source={require("../../assets/backToSchool.json")}
+              />
+            ) : (
+              <LottieView
+                autoPlay
+                ref={startTimer}
+                style={globalStyles.startAnimation}
+                source={require("../../assets/typing.json")}
+              />
+            )}
           </View>
         </View>
       )}

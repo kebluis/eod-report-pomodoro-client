@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import globalStyles from "../css/global";
 import { ServiceContext } from "../store/ServiceContext";
+import { BREAK, POMODORO } from "../constants/global";
 
 const ServiceNavigatorComponent = () => {
   const { isBreak, toggleService } = useContext(ServiceContext);
@@ -21,13 +22,13 @@ const ServiceNavigatorComponent = () => {
         style={[vPadding1, hPadding1, getButtonStyle(!isBreak)]}
         onPress={() => toggleService(false)}
       >
-        <Text style={getTextColor(!isBreak, "#ba4949")}>Pomodoro</Text>
+        <Text style={getTextColor(!isBreak, "#ba4949")}>{POMODORO}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[vPadding1, hPadding1, getButtonStyle(isBreak)]}
         onPress={() => toggleService(true)}
       >
-        <Text style={getTextColor(isBreak, "#38858a")}>Break</Text>
+        <Text style={getTextColor(isBreak, "#38858a")}>{BREAK}</Text>
       </TouchableOpacity>
     </View>
   );
