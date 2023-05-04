@@ -31,13 +31,12 @@ Notifications.setNotificationHandler({
 });
 
 const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
-  const { serviceSelected, changeService } = useContext(ServiceContext);
+  const { serviceSelected, changeService, isCountdownStarted, toggleCountdown } = useContext(ServiceContext);
 
   const startTimer = useRef(null);
   const doneTask = useRef(null);
 
   const [timerId, setTimerId] = useState(new Date().getTime().toString());
-  const [start, setStart] = useState(false);
   const [show, setShow] = useState(false);
   const [alarmSound, setAlarmSound] = useState(null);
 
@@ -59,7 +58,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     startTimer.current?.reset();
     doneTask.current?.reset();
     selectionAsync();
-    setStart(true);
+    toggleCountdown(true);
     await Notifications.setNotificationChannelAsync("countdown-over", {
       name: NOTIFICATION.title,
       importance: Notifications.AndroidImportance.MAX,
@@ -93,7 +92,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
 
   const onFinishCountDown = () => {
     doneTask.current?.play();
-    setStart(false);
+    toggleCountdown(false);
     setShow(true);
     alarmSound.replayAsync();
   };
@@ -144,11 +143,11 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         id={timerId}
         until={10}
         size={48}
-        running={start && !show}
+        running={isCountdownStarted && !show}
         onFinish={onFinishCountDown}
       />
 
-      {start && !show && (
+      {isCountdownStarted && !show && (
         <View style={styles.animationContainer}>
           <FontAwesome name="pause-circle" size={48} color="white" />
 
@@ -175,7 +174,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
           </View>
         </View>
       )}
-      {!start && !show && (
+      {!isCountdownStarted && !show && (
         <FontAwesome
           name="play-circle"
           size={48}

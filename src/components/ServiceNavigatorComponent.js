@@ -12,7 +12,8 @@ import { ServiceContext } from "../store/ServiceContext";
 import { serviceNavigation } from "../model/serviceNavigation";
 
 const ServiceNavigatorComponent = () => {
-  const { serviceSelected, changeService } = useContext(ServiceContext);
+  const { serviceSelected, changeService, isCountdownStarted } =
+    useContext(ServiceContext);
   const { centered, whiteText, vPadding1, hPadding1 } = globalStyles;
 
   const getTextColor = (service, color) => {
@@ -34,7 +35,7 @@ const ServiceNavigatorComponent = () => {
           return (
             <TouchableOpacity
               style={[vPadding1, hPadding1, getButtonStyle(title)]}
-              onPress={() => changeService(title)}
+              onPress={() => !isCountdownStarted && changeService(title)}
             >
               <Text style={getTextColor(title, color)}>{title}</Text>
             </TouchableOpacity>
@@ -47,7 +48,7 @@ const ServiceNavigatorComponent = () => {
 
 const styles = StyleSheet.create({
   flex: {
-    flex: 1
+    flex: 1,
   },
   active: {
     borderTopLeftRadius: 10,

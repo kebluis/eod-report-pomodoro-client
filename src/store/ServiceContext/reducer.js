@@ -5,6 +5,11 @@ const ServiceReducer = (state, action) => {
         ...state,
         serviceSelected: action.payload,
       };
+    case "toggle_countdown":
+      return {
+        ...state,
+        isCountdownStarted: action.payload,
+      };
 
     default:
       return state;

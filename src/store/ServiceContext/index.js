@@ -7,20 +7,28 @@ export const ServiceContext = createContext();
 export const ServiceProvider = ({ children }) => {
   const initialState = {
     serviceSelected: POMODORO,
+    isCountdownStarted: false,
   };
 
   const [state, dispatch] = useReducer(ServiceReducer, initialState);
 
-  const changeService = (data) => {
+  const changeService = (payload) =>
     dispatch({
       type: "change_service",
-      payload: data,
+      payload,
     });
-  };
+
+  const toggleCountdown = (payload) =>
+    dispatch({ type: "toggle_countdown", payload });
 
   return (
     <ServiceContext.Provider
-      value={{ serviceSelected: state.serviceSelected, changeService }}
+      value={{
+        serviceSelected: state.serviceSelected,
+        isCountdownStarted: state.isCountdownStarted,
+        changeService,
+        toggleCountdown,
+      }}
     >
       {children}
     </ServiceContext.Provider>
