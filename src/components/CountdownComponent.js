@@ -10,7 +10,13 @@ import ConfirmModal from "./modals/ConfirmModal.js";
 import CountDown from "react-native-countdown-component";
 import * as Notifications from "expo-notifications";
 import { ServiceContext } from "../store/ServiceContext";
-import { BREAK, NOTIFICATION, POMODORO, STOP } from "../constants/global";
+import {
+  BREAK,
+  BREAKS,
+  NOTIFICATION,
+  POMODORO,
+  STOP,
+} from "../constants/global";
 
 // First, set the handler that will cause the notification
 // to show the alert
@@ -25,7 +31,7 @@ Notifications.setNotificationHandler({
 });
 
 const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
-  const { isBreak, toggleService } = useContext(ServiceContext);
+  const { serviceSelected, changeService } = useContext(ServiceContext);
 
   const startTimer = useRef(null);
   const doneTask = useRef(null);
@@ -73,9 +79,10 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: NOTIFICATION.timeUp,
-        body: isBreak
-          ? NOTIFICATION.breakMsg
-          : NOTIFICATION.pomoMsg,
+        body:
+          serviceSelected !== POMODORO
+            ? NOTIFICATION.breakMsg
+            : NOTIFICATION.pomoMsg,
         sound: "alarm.wav",
         priority: Notifications.AndroidNotificationPriority.MAX,
         color: "red",
@@ -101,28 +108,28 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     <View style={[globalStyles.vPadding1, globalStyles.wrapper]}>
       <ConfirmModal
         onNext={() => {
-          toggleService(!isBreak);
-          resetAlarm()
+          changeService(serviceSelected === POMODORO ? BREAKS.short : POMODORO);
+          resetAlarm();
         }}
         onCancel={resetAlarm}
         isVisible={show}
-        nextText={`${isBreak ? POMODORO : BREAK}`}
+        nextText={`${serviceSelected === POMODORO ? BREAKS.short : POMODORO}`}
         cancelText={STOP}
       >
         <View style={styles.animationContainer}>
-          {isBreak ? (
+          {serviceSelected === POMODORO ? (
             <LottieView
               autoPlay
               ref={doneTask}
               style={globalStyles.doneAnimation}
-              source={require("../../assets/meditatingWork.json")}
+              source={require("../../assets/done.json")}
             />
           ) : (
             <LottieView
               autoPlay
               ref={doneTask}
               style={globalStyles.doneAnimation}
-              source={require("../../assets/done.json")}
+              source={require("../../assets/meditatingWork.json")}
             />
           )}
         </View>
@@ -146,7 +153,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
           <FontAwesome name="pause-circle" size={48} color="white" />
 
           <View>
-            {!isBreak ? (
+            {serviceSelected === POMODORO ? (
               <LottieView
                 autoPlay
                 ref={startTimer}
@@ -158,7 +165,11 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
                 autoPlay
                 ref={startTimer}
                 style={globalStyles.startAnimation}
-                source={require("../../assets/typing.json")}
+                source={
+                  serviceSelected === BREAKS.short
+                    ? require("../../assets/typing.json")
+                    : require("../../assets/seaWalk.json")
+                }
               />
             )}
           </View>
