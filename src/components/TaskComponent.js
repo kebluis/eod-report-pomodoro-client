@@ -53,14 +53,13 @@ const TaskComponent = ({ id, taskName, isDone, removeTask, toggleTask }) => {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 10,
-    // backgroundColor: "#fff",
     width: "100%",
     marginBottom: 16,
     shadowColor: "#171717",
     shadowOffset: { width: -2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    elevation: 20,
+    elevation: 8,
   },
   doneTask: {
     backgroundColor: "#6aa181 !important",
