@@ -10,13 +10,7 @@ import ConfirmModal from "./modals/ConfirmModal.js";
 import CountDown from "react-native-countdown-component";
 import * as Notifications from "expo-notifications";
 import { ServiceContext } from "../store/ServiceContext";
-import {
-  BREAK,
-  BREAKS,
-  NOTIFICATION,
-  POMODORO,
-  STOP,
-} from "../constants/global";
+import { BREAKS, NOTIFICATION, POMODORO, STOP } from "../constants/global";
 
 // First, set the handler that will cause the notification
 // to show the alert
@@ -31,14 +25,21 @@ Notifications.setNotificationHandler({
 });
 
 const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
-  const { serviceSelected, changeService, isCountdownStarted, toggleCountdown } = useContext(ServiceContext);
+  const {
+    serviceSelected,
+    changeService,
+    isCountdownStarted,
+    toggleCountdown,
+  } = useContext(ServiceContext);
 
   const startTimer = useRef(null);
   const doneTask = useRef(null);
+  const countdownTimer = useRef(null);
 
   const [timerId, setTimerId] = useState(new Date().getTime().toString());
   const [show, setShow] = useState(false);
   const [alarmSound, setAlarmSound] = useState(null);
+  const [pause, setPause] = useState(true);
 
   useEffect(() => {
     const init = async () => {
@@ -55,10 +56,13 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
   }, []);
 
   const startCountdown = async () => {
-    startTimer.current?.reset();
-    doneTask.current?.reset();
-    selectionAsync();
-    toggleCountdown(true);
+    setPause(false);
+    if (!isCountdownStarted) {
+      startTimer.current?.reset();
+      doneTask.current?.reset();
+      selectionAsync();
+      toggleCountdown(true);
+    }
     await Notifications.setNotificationChannelAsync("countdown-over", {
       name: NOTIFICATION.title,
       importance: Notifications.AndroidImportance.MAX,
@@ -66,7 +70,8 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
       lightColor: "#FF231F7C",
       vibrationPattern: [0, 250, 250, 250],
       bypassDnd: true,
-      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+      lockscreenVisibility:
+        Notifications.AndroidNotificationVisibility.PUBLIC,
       enableLights: true,
       enableVibrate: true,
       showBadge: true,
@@ -86,7 +91,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         priority: Notifications.AndroidNotificationPriority.MAX,
         color: "red",
       },
-      trigger: { seconds: 10, channelId: "countdown-over" },
+      trigger: { seconds: countdownTimer?.current?.state?.until, channelId: "countdown-over" },
     });
   };
 
@@ -101,6 +106,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     alarmSound.pauseAsync();
     setTimerId(new Date().getTime().toString());
     setShow(false);
+    setPause(false);
   };
 
   return (
@@ -143,14 +149,30 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         id={timerId}
         until={10}
         size={48}
-        running={isCountdownStarted && !show}
+        running={!pause && isCountdownStarted && !show}
         onFinish={onFinishCountDown}
+        ref={countdownTimer}
       />
 
-      {isCountdownStarted && !show && (
-        <View style={styles.animationContainer}>
-          <FontAwesome name="pause-circle" size={48} color="white" />
-
+      <View style={styles.animationContainer}>
+        {!pause && isCountdownStarted && !show ? (
+          <FontAwesome
+            name="pause-circle"
+            size={48}
+            color="white"
+            onPress={() => {setPause(true);
+            Notifications.cancelAllScheduledNotificationsAsync();
+            }}
+          />
+        ) : (
+          <FontAwesome
+            name="play-circle"
+            size={48}
+            color="white"
+            onPress={startCountdown}
+          />
+        )}
+        {isCountdownStarted && !show && (
           <View>
             {serviceSelected === POMODORO ? (
               <LottieView
@@ -172,16 +194,8 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
               />
             )}
           </View>
-        </View>
-      )}
-      {!isCountdownStarted && !show && (
-        <FontAwesome
-          name="play-circle"
-          size={48}
-          color="white"
-          onPress={startCountdown}
-        />
-      )}
+        )}
+      </View>
     </View>
   );
 };
