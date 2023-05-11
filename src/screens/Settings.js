@@ -30,8 +30,9 @@ const Settings = ({modalVisible, hideModal}) => {
         }
 
     ]);
-    const { isBreak } = useContext(ServiceContext);
-    const mode = isBreak ? 'break' : 'pomo';
+    const { serviceSelected } = useContext(ServiceContext);
+
+    const mode = serviceSelected;
 
     const addEmail = email => setEmails([...emails, email]);
 
@@ -57,13 +58,6 @@ const Settings = ({modalVisible, hideModal}) => {
 
         setToEmail("");
     }
-
-    const emailList = (
-        <FlatList
-            data={emails}
-            renderItem={({item, index}) => <EmailRow theme={mode} item={item} index={index} removeEmail={removeEmail} />}
-        />
-    );
 
     // TODO add submit button for API integration
     return (
@@ -93,8 +87,10 @@ const Settings = ({modalVisible, hideModal}) => {
                         <Text style={globalStyles.containerBg[mode]}>Emails to send to:</Text>
                     </View>
                     <View style={styles.emailList}>
-                        <Text></Text>
-                        {emailList}
+                        <FlatList
+                            data={emails}
+                            renderItem={({item, index}) => <EmailRow theme={mode} item={item} index={index} removeEmail={removeEmail} />}
+                        />
                     </View>
                     <View style={styles.emailInputContainer}>
                         <TextInput

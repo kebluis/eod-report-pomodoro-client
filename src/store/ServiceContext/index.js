@@ -1,25 +1,34 @@
 import React, { createContext, useReducer } from "react";
 import ServiceReducer from "./reducer";
+import { POMODORO } from "../../constants/global";
 
 export const ServiceContext = createContext();
 
 export const ServiceProvider = ({ children }) => {
   const initialState = {
-    isBreak: true,
+    serviceSelected: POMODORO,
+    isCountdownStarted: false,
   };
 
   const [state, dispatch] = useReducer(ServiceReducer, initialState);
 
-  const toggleService = (data) => {
+  const changeService = (payload) =>
     dispatch({
-      type: "toggle_service",
-      payload: data,
+      type: "change_service",
+      payload,
     });
-  };
+
+  const toggleCountdown = (payload) =>
+    dispatch({ type: "toggle_countdown", payload });
 
   return (
     <ServiceContext.Provider
-      value={{ isBreak: state.isBreak, toggleService }}
+      value={{
+        serviceSelected: state.serviceSelected,
+        isCountdownStarted: state.isCountdownStarted,
+        changeService,
+        toggleCountdown,
+      }}
     >
       {children}
     </ServiceContext.Provider>

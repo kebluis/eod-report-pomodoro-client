@@ -6,15 +6,15 @@ import LoadingComponent from "../components/LoadingComponent";
 import ServiceNavigatorComponent from "../components/ServiceNavigatorComponent";
 import { ServiceContext, ServiceProvider } from "../store/ServiceContext";
 import Navigations from "../components/navigation/Navigations";
-
 import globalStyles from "../css/global";
 
+import { BREAKS, POMODORO } from "../constants/global";
+
 const DashboardScreen = ({ isLoading }) => {
-  const { isBreak } = useContext(ServiceContext);
-  const mode = isBreak ? 'break' : 'pomo';
+  const { serviceSelected } = useContext(ServiceContext);
 
   return (
-    <View style={[styles.container, globalStyles.containerBg[mode]]}>
+    <View style={[styles.container, globalStyles.containerBg[serviceSelected]]}>
         <View style={styles.navContainer}>
             <Navigations />
         </View>

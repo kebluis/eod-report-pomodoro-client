@@ -1,9 +1,14 @@
 const ServiceReducer = (state, action) => {
   switch (action.type) {
-    case "toggle_service":
+    case "change_service":
       return {
         ...state,
-        isBreak: action.payload,
+        serviceSelected: action.payload,
+      };
+    case "toggle_countdown":
+      return {
+        ...state,
+        isCountdownStarted: action.payload,
       };
 
     default:

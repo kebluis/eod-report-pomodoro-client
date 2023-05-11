@@ -1,50 +1,60 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
 
 import globalStyles from "../css/global";
 import { ServiceContext } from "../store/ServiceContext";
+import { serviceNavigation } from "../model/serviceNavigation";
 
 const ServiceNavigatorComponent = () => {
-  const { isBreak, toggleService } = useContext(ServiceContext);
-  const { centered, rowDirection, whiteText, vPadding1, hPadding1 } =
-    globalStyles;
+  const { serviceSelected, changeService, isCountdownStarted } =
+    useContext(ServiceContext);
+  const { centered, whiteText, vPadding1, hPadding1 } = globalStyles;
 
-  const getTextColor = (enable, color) => {
-    return enable ? { color } : { ...whiteText };
+  const getTextColor = (service, color) => {
+    return serviceSelected === service ? { color } : { ...whiteText };
   };
 
-  const getButtonStyle = (enable) => (enable ? { ...styles.active } : {});
+  const getButtonStyle = (service) =>
+    serviceSelected === service ? { ...styles.active } : {};
 
   return (
-    <View style={[centered, rowDirection, styles.separator]}>
-      <TouchableOpacity
-        style={[vPadding1, hPadding1, getButtonStyle(!isBreak)]}
-        onPress={() => toggleService(false)}
-      >
-        <Text style={getTextColor(!isBreak, "#ba4949")}>Pomodoro</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={[vPadding1, hPadding1, getButtonStyle(isBreak)]}
-        onPress={() => toggleService(true)}
-      >
-        <Text style={getTextColor(isBreak, "#38858a")}>Break</Text>
-      </TouchableOpacity>
+    <View style={styles.separator}>
+      <FlatList
+        contentContainerStyle={[centered, styles.flex]}
+        horizontal
+        data={serviceNavigation}
+        keyExtractor={(service) => service.title}
+        renderItem={({ item }) => {
+          const { title, color } = item;
+          return (
+            <TouchableOpacity
+              style={[vPadding1, hPadding1, getButtonStyle(title)]}
+              onPress={() => !isCountdownStarted && changeService(title)}
+            >
+              <Text style={getTextColor(title, color)}>{title}</Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   active: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     backgroundColor: "white",
-    elevation: 20,
-  },
-  pomodoro: {
-    color: "#ba4949",
-  },
-  break: {
-    color: "#38858a",
+    elevation: 8,
   },
   separator: {
     borderBottomWidth: 3,
