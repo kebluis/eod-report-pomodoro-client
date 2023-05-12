@@ -9,8 +9,8 @@ import globalStyles from "../../css/global";
 
 const Navigations = () => {
     const [modalVisible, setModalVisible] = useState(false);
-    const { isBreak } = useContext(ServiceContext);
-    const mode = isBreak ? 'break' : 'pomo';
+    const { serviceSelected } = useContext(ServiceContext);
+    const mode = serviceSelected;
 
     const showSettings = () => {
         setModalVisible(true);

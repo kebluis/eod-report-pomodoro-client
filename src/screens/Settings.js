@@ -79,7 +79,11 @@ const Settings = ({modalVisible, hideModal}) => {
                     </View>
                     <View style={styles.inputContainer}>
                         <Text style={globalStyles.containerBg[mode]}>Short break</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="break timer" placeholderTextColor="white" />
+                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="short timer" placeholderTextColor="white" />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={globalStyles.containerBg[mode]}>Long break</Text>
+                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="long timer" placeholderTextColor="white" />
                     </View>
                 </View>
                 <View style={styles.formContainer}>

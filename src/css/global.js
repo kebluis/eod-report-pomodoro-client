@@ -67,6 +67,9 @@ export default StyleSheet.create({
     },
     [BREAKS.short]: {
       backgroundColor: "#4c9196",
+    },
+    [BREAKS.long]: {
+      backgroundColor: "#4c7fa2",
     }
   },
 });
