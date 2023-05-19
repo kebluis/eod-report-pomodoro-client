@@ -26,12 +26,12 @@ const Navigations = () => {
                 style={[styles.button, globalStyles.button[mode]]}
                 onPress={showSettings}
             >
-                <Text style={styles.text}>settings<Icon name="setting" size={15} color="white" /></Text>
+                <Text style={styles.text}><Icon name="setting" size={15} color="white" /> settings</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 style={[styles.button, globalStyles.button[mode]]}
             >
-                <Text style={styles.text}>Log out<Icon name="logout" size={15} color="white" /></Text>
+                <Text style={styles.text}><Icon name="logout" size={15} color="white" /> Log out</Text>
             </TouchableOpacity>
             <Settings mode={mode} modalVisible={modalVisible} hideModal={hideSettings} />
         </View>

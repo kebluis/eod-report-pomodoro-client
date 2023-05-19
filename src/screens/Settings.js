@@ -93,7 +93,9 @@ const Settings = ({modalVisible, hideModal}) => {
                     <View style={styles.emailList}>
                         <FlatList
                             data={emails}
-                            renderItem={({item, index}) => <EmailRow theme={mode} item={item} index={index} removeEmail={removeEmail} />}
+                            renderItem={({item, index}) => <EmailRow theme={mode} item={item} index={index} removeEmail={removeEmail}
+                            keyExtractor={({item, index}) => index}
+                        />}
                         />
                     </View>
                     <View style={styles.emailInputContainer}>
