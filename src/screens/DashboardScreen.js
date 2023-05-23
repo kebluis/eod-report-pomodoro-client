@@ -5,23 +5,19 @@ import TasklistComponent from "../components/TasklistComponent";
 import LoadingComponent from "../components/LoadingComponent";
 import ServiceNavigatorComponent from "../components/ServiceNavigatorComponent";
 import { ServiceContext, ServiceProvider } from "../store/ServiceContext";
+import Navigations from "../components/navigation/Navigations";
+import globalStyles from "../css/global";
+
 import { BREAKS, POMODORO } from "../constants/global";
 
 const DashboardScreen = ({ isLoading }) => {
   const { serviceSelected } = useContext(ServiceContext);
-  const getBackground = () => {
-    if (serviceSelected === POMODORO) {
-      return { backgroundColor: "#ba4949" };
-    } else {
-      return {
-        backgroundColor:
-          serviceSelected === BREAKS.short ? "#38858a" : "#397097",
-      };
-    }
-  };
 
   return (
-    <View style={[styles.container, getBackground()]}>
+    <View style={[styles.container, globalStyles.containerBg[serviceSelected]]}>
+        <View style={styles.navContainer}>
+            <Navigations />
+        </View>
       {isLoading ? (
         <LoadingComponent isMain />
       ) : (
@@ -43,6 +39,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginVertical: 48,
   },
+    navContainer: {
+        height: 30,
+    },
 });
 
 export default () => (

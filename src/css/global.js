@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { BREAKS, POMODORO } from "../constants/global";
 
 export default StyleSheet.create({
   whiteText: {
@@ -45,5 +46,30 @@ export default StyleSheet.create({
   rowDirection: {
     display: "flex",
     flexDirection: "row",
+  },
+  containerBg: {
+    [POMODORO]: {
+      backgroundColor: "#ba4949",
+      color: 'white',
+    },
+    [BREAKS.short]: {
+      backgroundColor: "#38858a",
+      color: 'white',
+    },
+    [BREAKS.long]: {
+      backgroundColor: "#397097",
+      color: 'white',
+    },
+  },
+  button: {
+    [POMODORO]: {
+      backgroundColor: "#c15c5c",
+    },
+    [BREAKS.short]: {
+      backgroundColor: "#4c9196",
+    },
+    [BREAKS.long]: {
+      backgroundColor: "#4c7fa2",
+    }
   },
 });
