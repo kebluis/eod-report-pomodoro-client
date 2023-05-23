@@ -9,7 +9,7 @@ import {
 
 import globalStyles from "../css/global";
 import { ServiceContext } from "../store/ServiceContext";
-import { serviceNavigation } from "../model/serviceNavigation";
+import { serviceNavigation } from "../fixtures/serviceNavigation";
 
 const ServiceNavigatorComponent = () => {
   const { serviceSelected, changeService, isCountdownStarted } =

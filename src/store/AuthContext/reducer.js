@@ -5,6 +5,11 @@ const AuthReducer = (state, action) => {
         ...state,
         isSignedIn: action.payload,
       };
+    case "store_token":
+      return {
+        ...state,
+        token: action.payload,
+      };
 
     default:
       return state;

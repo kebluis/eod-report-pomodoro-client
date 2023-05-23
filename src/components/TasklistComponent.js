@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Text, View, StyleSheet, Pressable, FlatList } from "react-native";
 import globalStyles from "../css/global";
 import TaskComponent from "./TaskComponent";
 
 import tasksData from "../model/mock/tasks";
+import { getAllTasks } from "../model/DashboardModel";
 
 const TasklistComponent = () => {
   const { wrapper, hPadding1, vPadding1, vMargin1, whiteText, fullWidth } =
     globalStyles;
 
-  const [tasks, setTasks] = useState(tasksData);
+  const [tasks, setTasks] = useState(null);
+
+  const setAllTasks = useCallback(async() => {
+    const response = await getAllTasks(1);
+    setTasks(response);
+  }, [])
+
+  useEffect(() => {
+    if(!!tasks) {
+      setAllTasks()
+    }
+  }, [])
 
   // TODO: replace & insert 'task delete API' here
   const removeTask = (_id) =>
