@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "com.kebluis.eosreportintegratedpomodoroappclient",
     "plugins": [
       [
         "expo-notifications",
@@ -27,7 +28,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kebluis.eosreportintegratedpomodoroappclient"
     },
     "android": {
       "adaptiveIcon": {
@@ -42,7 +44,8 @@
     },
     "extra": {
       "eas": {
-        "projectId": "ccd5ac9c-6e6a-45ea-807d-baff28f1b327"
+        // "projectId": "ccd5ac9c-6e6a-45ea-807d-baff28f1b327"
+        "projectId": "0697a5a1-d143-4f50-842a-f8ea7137e1d2"
       }
     }
   }
