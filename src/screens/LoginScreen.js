@@ -50,25 +50,6 @@ export default function LoginScreen() {
     return JSON.parse(data);
   };
 
-  const getUserInfo = async (token) => {
-    if (!token) return;
-    try {
-      const response = await fetch(
-        "https://www.googleapis.com/userinfo/v2/me",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const user = await response.json();
-      await AsyncStorage.setItem("@user", JSON.stringify(user));
-      isAuthenticated(!!user)
-      setUserInfo(user);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   return (
     <View style={styles.container}>
         <TouchableOpacity
