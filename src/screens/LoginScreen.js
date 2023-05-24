@@ -1,16 +1,19 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Image, TouchableOpacity, ImageBackground} from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import getEnvVars from "../environment";
+import getEnvVars from "../../environment";
+import { AuthContext } from "../store/AuthContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  const { apiUrl, configIosClientId, configWebClientId, configAndroiClientId } = getEnvVars();
+  const { token, storeToken, isAuthenticated } = useContext(AuthContext);
 
-  const [token, setToken] = useState("");
+  const { configIosClientId, configWebClientId, configAndroiClientId } =
+    getEnvVars();
+
   const [userInfo, setUserInfo] = useState(null);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -24,17 +27,19 @@ export default function LoginScreen() {
   }, [response, token]);
 
   async function handleEffect() {
-    await AsyncStorage.removeItem("@user")
+    await AsyncStorage.removeItem("@user");
     const user = await getLocalUser();
-    console.log("user", user);
     if (!user) {
       if (response?.type === "success") {
-        // setToken(response.authentication.accessToken);
+        storeToken(response.authentication.accessToken);
+        await AsyncStorage.setItem(
+          "@token",
+          response.authentication.accessToken
+        );
         getUserInfo(response.authentication.accessToken);
       }
     } else {
       setUserInfo(user);
-      console.log("loaded locally");
     }
   }
 
@@ -56,37 +61,28 @@ export default function LoginScreen() {
 
       const user = await response.json();
       await AsyncStorage.setItem("@user", JSON.stringify(user));
+      isAuthenticated(!!user)
       setUserInfo(user);
     } catch (error) {
-      // Add your own error handler here
+      console.error(error);
     }
   };
 
   return (
     <View style={styles.container}>
-      {!userInfo ? (
-        <TouchableOpacity style={styles.button} onPress={() => {
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
             promptAsync();
           }}
         >
-        <Image source={require('../../assets/google_logo.png')} style={styles.logo} />
-        <Text style={styles.text}>Sign in with Google</Text>
+          <Image
+            source={require("../../assets/google_logo.png")}
+            style={styles.logo}
+          />
+          <Text style={styles.text}>Sign in with Google</Text>
         </TouchableOpacity>
-      ) : (
-        <View style={styles.card}>
-          {userInfo?.picture && (
-            <Image source={{ uri: userInfo?.picture }} style={styles.image} />
-          )}
-          <Text style={styles.text}>Email: {userInfo.email}</Text>
-          <Text style={styles.text}>
-            Verified: {userInfo.verified_email ? "yes" : "no"}
-          </Text>
-          <Text style={styles.text}>Name: {userInfo.name}</Text>
-          {/* <Text style={styles.text}>{JSON.stringify(userInfo, null, 2)}</Text> */}
-        </View>
-      )}
     </View>
-    
   );
 }
 
@@ -98,13 +94,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1,
@@ -130,7 +126,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   text: {
-    color: '#757575',
-    fontWeight: '500',
+    color: "#757575",
+    fontWeight: "500",
   },
 });
