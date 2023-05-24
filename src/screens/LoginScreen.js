@@ -16,10 +16,11 @@ export default function LoginScreen() {
 
   const [userInfo, setUserInfo] = useState(null);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: configWebClientId, // Your Expo client ID for Google Sign-In
     iosClientId: configIosClientId, // Your iOS client ID for Google Sign-In
     androidClientId: configAndroiClientId, // Your Android client ID for Google Sign-In
+    scopes: ['openid', 'profile', 'email']
   });
 
   useEffect(() => {
@@ -31,12 +32,12 @@ export default function LoginScreen() {
     const user = await getLocalUser();
     if (!user) {
       if (response?.type === "success") {
-        storeToken(response.authentication.accessToken);
+        storeToken(response.params.id_token);
         await AsyncStorage.setItem(
           "@token",
-          response.authentication.accessToken
+          response.params.id_token
         );
-        getUserInfo(response.authentication.accessToken);
+        isAuthenticated(!!response.params.id_token)
       }
     } else {
       setUserInfo(user);
@@ -47,25 +48,6 @@ export default function LoginScreen() {
     const data = await AsyncStorage.getItem("@user");
     if (!data) return null;
     return JSON.parse(data);
-  };
-
-  const getUserInfo = async (token) => {
-    if (!token) return;
-    try {
-      const response = await fetch(
-        "https://www.googleapis.com/userinfo/v2/me",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const user = await response.json();
-      await AsyncStorage.setItem("@user", JSON.stringify(user));
-      isAuthenticated(!!user)
-      setUserInfo(user);
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   return (
