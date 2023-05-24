@@ -16,10 +16,11 @@ export default function LoginScreen() {
 
   const [userInfo, setUserInfo] = useState(null);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: configWebClientId, // Your Expo client ID for Google Sign-In
     iosClientId: configIosClientId, // Your iOS client ID for Google Sign-In
     androidClientId: configAndroiClientId, // Your Android client ID for Google Sign-In
+    scopes: ['openid', 'profile', 'email']
   });
 
   useEffect(() => {
@@ -31,12 +32,12 @@ export default function LoginScreen() {
     const user = await getLocalUser();
     if (!user) {
       if (response?.type === "success") {
-        storeToken(response.authentication.accessToken);
+        storeToken(response.params.id_token);
         await AsyncStorage.setItem(
           "@token",
-          response.authentication.accessToken
+          response.params.id_token
         );
-        getUserInfo(response.authentication.accessToken);
+        isAuthenticated(!!response.params.id_token)
       }
     } else {
       setUserInfo(user);
