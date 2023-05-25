@@ -47,6 +47,15 @@ export default StyleSheet.create({
     display: "flex",
     flexDirection: "row",
   },
+  modalContent: {
+    height: "50%",
+    width: "100%",
+    backgroundColor: "#25292e",
+    borderTopRightRadius: 18,
+    borderTopLeftRadius: 18,
+    position: "absolute",
+    bottom: 0,
+  },
   containerBg: {
     [POMODORO]: {
       backgroundColor: "#ba4949",

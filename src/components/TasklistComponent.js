@@ -1,27 +1,38 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Text, View, StyleSheet, Pressable, FlatList } from "react-native";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Text, View, StyleSheet, FlatList } from "react-native";
 import globalStyles from "../css/global";
 import TaskComponent from "./TaskComponent";
-
-import tasksData from "../model/mock/tasks";
 import { getAllTasks } from "../model/DashboardModel";
+import { UserContext } from "../store/UserContext";
+import { Ionicons } from "@expo/vector-icons";
+import AddTaskModal from "./modals/AddTaskModal";
 
 const TasklistComponent = () => {
-  const { wrapper, hPadding1, vPadding1, vMargin1, whiteText, fullWidth } =
-    globalStyles;
+  const {
+    wrapper,
+    hPadding1,
+    vPadding1,
+    vMargin1,
+    whiteText,
+    fullWidth,
+    rowDirection,
+    spaceBetween,
+  } = globalStyles;
+
+  const { userInfo } = useContext(UserContext);
 
   const [tasks, setTasks] = useState(null);
 
-  const setAllTasks = useCallback(async() => {
-    const response = await getAllTasks(1);
+  const setAllTasks = useCallback(async (id) => {
+    const response = await getAllTasks(id);
     setTasks(response);
-  }, [])
+  }, []);
 
   useEffect(() => {
-    if(!!tasks) {
-      setAllTasks()
+    if (!!userInfo?.id) {
+      setAllTasks(userInfo?.id);
     }
-  }, [])
+  }, [userInfo]);
 
   // TODO: replace & insert 'task delete API' here
   const removeTask = (_id) =>
@@ -41,20 +52,36 @@ const TasklistComponent = () => {
     setTasks(_tasks);
   };
 
+  const addTask = () => {
+    
+  }
+
   return (
+    <>
+    <AddTaskModal isVisible={true} />
+    
     <View style={[wrapper, hPadding1, vMargin1]}>
-      <Text style={[styles.header, vPadding1, whiteText]}>Task List</Text>
+      <View style={rowDirection}>
+        <Text style={[styles.header, vPadding1, whiteText]}>Task List</Text>
+        <Ionicons
+          style={[styles.header, styles.addButton, vPadding1]}
+          name="add-sharp"
+          size={32}
+          color="white"
+          onPress={addTask}
+        />
+      </View>
       <FlatList
         style={fullWidth}
         data={tasks}
         keyExtractor={(tasks) => tasks.id}
         renderItem={({ item }) => {
-          const { id, taskName, isDone } = item;
+          const { id, description, isDone } = item;
           return (
             <TaskComponent
               key={id}
               id={id}
-              taskName={taskName}
+              taskName={description}
               isDone={isDone}
               removeTask={removeTask}
               toggleTask={toggleTask}
@@ -63,6 +90,7 @@ const TasklistComponent = () => {
         }}
       />
     </View>
+    </>
   );
 };
 
@@ -71,6 +99,11 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     fontWeight: "700",
     fontSize: 24,
+    flex: 1,
+  },
+  addButton: {
+    textAlign:'right',
+    marginRight: 8
   },
 });
 
