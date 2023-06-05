@@ -17,3 +17,11 @@ export const get = async (path) => {
   const { data } = await api(token).get(path);
   return data;
 };
+
+export const post = async (path, payload) => {
+  const token = await AsyncStorage.getItem("@token");
+  const { data } = await api(token).post(path);
+  return data;
+};
+
+

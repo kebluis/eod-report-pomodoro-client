@@ -22,6 +22,7 @@ const TasklistComponent = () => {
   const { userInfo } = useContext(UserContext);
 
   const [tasks, setTasks] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   const setAllTasks = useCallback(async (id) => {
     const response = await getAllTasks(id);
@@ -53,12 +54,12 @@ const TasklistComponent = () => {
   };
 
   const addTask = () => {
-    
+    setIsVisible(true)
   }
 
   return (
     <>
-    <AddTaskModal isVisible={true} />
+    <AddTaskModal isVisible={isVisible} />
     
     <View style={[wrapper, hPadding1, vMargin1]}>
       <View style={rowDirection}>
