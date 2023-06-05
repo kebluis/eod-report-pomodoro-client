@@ -40,16 +40,18 @@ const DashboardScreen = () => {
 
   return (
     <View style={[styles.container, globalStyles.containerBg[serviceSelected]]}>
-        <View style={styles.navContainer}>
-            <Navigations />
-        </View>
       {isLoading ? (
         <LoadingComponent isMain />
       ) : (
-        <View style={styles.wrapper}>
-          <ServiceNavigatorComponent />
-          <CountdownComponent />
-          <TasklistComponent />
+        <View>
+          <View style={styles.navContainer}>
+              <Navigations />
+          </View>
+          <View style={styles.wrapper}>
+            <ServiceNavigatorComponent />
+            <CountdownComponent />
+            <TasklistComponent />
+          </View>
         </View>
       )}
     </View>

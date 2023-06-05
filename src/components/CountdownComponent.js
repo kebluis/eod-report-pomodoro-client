@@ -62,18 +62,9 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
 
   useEffect(() => {
     setTimer();
-  }, [userSettings]);
-
-  useEffect(() => {
-    setTimer();
-  }, [serviceSelected]);
-
-  // useEffect(() => {
-  //   setTimer();
-  // });
+  }, [userSettings, serviceSelected]);
 
   const setTimer = async () => {
-    console.log('============d===============', serviceSelected == POMODORO, userSettings);
       switch (serviceSelected) {
         case POMODORO:
           await setTimeInSeconds((userSettings.pomodoroTime || 0) * 60);
@@ -93,7 +84,6 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     } else {
       setTimerId(new Date().getTime().toString());
     }
-    console.log('===========================+', timeInSeconds);
   }
 
   const startCountdown = async () => {

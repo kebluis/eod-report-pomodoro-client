@@ -20,15 +20,15 @@ import { AuthContext } from "../store/AuthContext";
 
 
 const Settings = ({modalVisible, hideModal}) => {
+    const { serviceSelected, userSettings, storeUserSettings } = useContext(ServiceContext);
     const { backEndApi } = getEnvVars();
-    const { token, userInfo } = useContext(AuthContext);
+    const { token } = useContext(AuthContext);
     const [toEmailType, setToEmailType] = useState("to");
     const [toEmail, setToEmail] = useState("");
-    const [emails, setEmails] = useState([]);
-
-    const { serviceSelected } = useContext(ServiceContext);
-
-    const mode = serviceSelected;
+    const [emails, setEmails] = useState((userSettings?.email || []));
+    const [pomotime, setPomoTime] = useState(userSettings?.pomodoroTime || '');
+    const [shorttime, setShortTime] = useState(userSettings?.shortBreak || '');
+    const [longtime, setLongTime] = useState(userSettings?.longBreak || '');
 
     const addEmail = email => setEmails([...emails, email]);
 
@@ -40,13 +40,7 @@ const Settings = ({modalVisible, hideModal}) => {
         setEmails(tempEmails);
     }
 
-    useEffect(() => {
-        if (userInfo?.settings?.email) {
-            setEmails(userInfo.settings.email);
-        }
-    });
-
-    console.log('settings are', userInfo);
+    console.log('settings are', userSettings);
 
     const addEmailToList = () => {
         // todo: validate email
@@ -54,7 +48,8 @@ const Settings = ({modalVisible, hideModal}) => {
         if (toEmail.length) {
             const email = {
                 emailAddress: toEmail,
-                emailType: toEmailType
+                emailType: toEmailType,
+                userSettings: userSettings.id
             };
 
             addEmail(email);
@@ -63,7 +58,31 @@ const Settings = ({modalVisible, hideModal}) => {
         setToEmail("");
     }
 
-    // TODO add submit button for API integration
+    const updateSettings = async () => {
+        await axios.put(backEndApi + 'user-settings/' + userSettings.id,
+            {
+              email: emails,
+              id: userSettings.id,
+              longBreak: longtime,
+              pomodoroTime: pomotime,
+              shortBreak: shorttime,
+              userId: userSettings.user.id
+            },
+            {
+                headers: {
+                    Authorization: "Bearer " + token
+                }
+            }
+        )
+        .then(async response => {
+            console.log('settings updated: ', response.data);
+            await storeUserSettings(response.data);
+            hideModal();
+        }).catch(error => {
+            console.log('error on setttings:', error);
+        });
+    }
+
     return (
         <Modal
             animationType="slide"
@@ -72,46 +91,64 @@ const Settings = ({modalVisible, hideModal}) => {
                 hideModal(false);
             }}
         >
-            <View style={[styles.container, globalStyles.containerBg[mode]]}>
+            <View style={[styles.container, globalStyles.containerBg[serviceSelected]]}>
                 <View style={styles.headerContainer}>
                     <Text style={styles.headerText}>Settings</Text>
                 </View>
                 <View style={styles.formContainer}>
                     <View style={styles.inputContainer}>
-                        <Text style={globalStyles.containerBg[mode]}>Pomodoro</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="pomodoro timer" value={userInfo?.settings?.pomodoroTime?.toString()} placeholderTextColor="white" />
+                        <Text style={globalStyles.containerBg[serviceSelected]}>Pomodoro</Text>
+                        <TextInput
+                            style={[styles.timerInput, globalStyles.containerBg[serviceSelected]]}
+                            placeholder="pomodoro timer"
+                            defaultValue={userSettings?.pomodoroTime?.toString()}
+                            placeholderTextColor="white"
+                            onChangeText={value => setPomoTime(value)}
+                        />
                     </View>
                     <View style={styles.inputContainer}>
-                        <Text style={globalStyles.containerBg[mode]}>Short break</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} value={userInfo?.settings?.shortBreak?.toString()} placeholder="short timer" placeholderTextColor="white" />
+                        <Text style={globalStyles.containerBg[serviceSelected]}>Short break</Text>
+                        <TextInput
+                            style={[styles.timerInput, globalStyles.containerBg[serviceSelected]]}
+                            defaultValue={userSettings?.shortBreak?.toString()}
+                            placeholder="short timer"
+                            placeholderTextColor="white"
+                            onChangeText={value => setShortTime(value)}
+                        />
                     </View>
                     <View style={styles.inputContainer}>
-                        <Text style={globalStyles.containerBg[mode]}>Long break</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} value={userInfo?.settings?.longBreak?.toString()} placeholder="long timer" placeholderTextColor="white" />
+                        <Text style={globalStyles.containerBg[serviceSelected]}>Long break</Text>
+                        <TextInput
+                            style={[styles.timerInput, globalStyles.containerBg[serviceSelected]]}
+                            defaultValue={userSettings?.longBreak?.toString()}
+                            placeholder="long timer"
+                            placeholderTextColor="white"
+                            onChangeText={value => setLongTime(value)}
+                        />
                     </View>
                 </View>
                 <View style={styles.formContainer}>
                     <View>
-                        <Text style={globalStyles.containerBg[mode]}>Emails to send to:</Text>
+                        <Text style={globalStyles.containerBg[serviceSelected]}>Emails to send to:</Text>
                     </View>
                     <View style={styles.emailList}>
                         <FlatList
                             data={emails}
-                            renderItem={({item, index}) => <EmailRow theme={mode} item={item} index={index} removeEmail={removeEmail}
+                            renderItem={({item, index}) => <EmailRow theme={serviceSelected} item={item} index={index} removeEmail={removeEmail}
                             keyExtractor={({item, index}) => index}
                         />}
                         />
                     </View>
                     <View style={styles.emailInputContainer}>
                         <TextInput
-                            style={[styles.email, globalStyles.containerBg[mode]]}
+                            style={[styles.email, globalStyles.containerBg[serviceSelected]]}
                             placeholder="email"
                             onChangeText={setToEmail}
                             value={toEmail}
                             placeholderTextColor="white"
                         />
                         <Picker
-                            style={[styles.toDropDown, globalStyles.containerBg[mode]]}
+                            style={[styles.toDropDown, globalStyles.containerBg[serviceSelected]]}
                             selectedValue={toEmailType}
                             onValueChange={(itemValue, itemIndex) => setToEmailType(itemValue)}
                         >
@@ -128,7 +165,7 @@ const Settings = ({modalVisible, hideModal}) => {
                     <Pressable style={[styles.button, styles.cancel]} onPress={hideModal}>
                         <Text>Cancel</Text>
                     </Pressable>
-                    <Pressable style={[styles.button, globalStyles.button[mode]]} onPress={() => {}}>
+                    <Pressable style={[styles.button, globalStyles.button[serviceSelected]]} onPress={updateSettings}>
                         <Text style={globalStyles.whiteText}>Save</Text>
                     </Pressable>
                 </View>
