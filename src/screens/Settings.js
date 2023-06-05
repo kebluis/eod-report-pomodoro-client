@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, { useContext, useEffect, useState } from "react";
 import {
     Modal,
     StyleSheet,
@@ -7,29 +7,25 @@ import {
     TextInput,
     TouchableOpacity,
     FlatList,
+    Pressable,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import Icon from "@expo/vector-icons/AntDesign";
 import { ServiceContext } from "../store/ServiceContext";
 import globalStyles from "../css/global";
 import EmailRow from "../components/EmailRow";
+import getEnvVars from "../../environment";
+import axios from "axios";
+import { AuthContext } from "../store/AuthContext";
+
 
 const Settings = ({modalVisible, hideModal}) => {
+    const { backEndApi } = getEnvVars();
+    const { token, userInfo } = useContext(AuthContext);
     const [toEmailType, setToEmailType] = useState("to");
     const [toEmail, setToEmail] = useState("");
-    const [emails, setEmails] = useState([
-        // sample default email
-        // TODO: add integration for fetching  settings/emails
-        {
-            email: 'sample@gmail.cm',
-            type: 'to'
-        },
-        {
-            email: 'sample2@gmail.cm',
-            type: 'cc'
-        }
+    const [emails, setEmails] = useState([]);
 
-    ]);
     const { serviceSelected } = useContext(ServiceContext);
 
     const mode = serviceSelected;
@@ -44,13 +40,21 @@ const Settings = ({modalVisible, hideModal}) => {
         setEmails(tempEmails);
     }
 
+    useEffect(() => {
+        if (userInfo?.settings?.email) {
+            setEmails(userInfo.settings.email);
+        }
+    });
+
+    console.log('settings are', userInfo);
+
     const addEmailToList = () => {
         // todo: validate email
 
         if (toEmail.length) {
             const email = {
-                email: toEmail,
-                type: toEmailType
+                emailAddress: toEmail,
+                emailType: toEmailType
             };
 
             addEmail(email);
@@ -75,15 +79,15 @@ const Settings = ({modalVisible, hideModal}) => {
                 <View style={styles.formContainer}>
                     <View style={styles.inputContainer}>
                         <Text style={globalStyles.containerBg[mode]}>Pomodoro</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="pomodoro timer" placeholderTextColor="white" />
+                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="pomodoro timer" value={userInfo?.settings?.pomodoroTime?.toString()} placeholderTextColor="white" />
                     </View>
                     <View style={styles.inputContainer}>
                         <Text style={globalStyles.containerBg[mode]}>Short break</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="short timer" placeholderTextColor="white" />
+                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} value={userInfo?.settings?.shortBreak?.toString()} placeholder="short timer" placeholderTextColor="white" />
                     </View>
                     <View style={styles.inputContainer}>
                         <Text style={globalStyles.containerBg[mode]}>Long break</Text>
-                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} placeholder="long timer" placeholderTextColor="white" />
+                        <TextInput style={[styles.timerInput, globalStyles.containerBg[mode]]} value={userInfo?.settings?.longBreak?.toString()} placeholder="long timer" placeholderTextColor="white" />
                     </View>
                 </View>
                 <View style={styles.formContainer}>
@@ -119,6 +123,14 @@ const Settings = ({modalVisible, hideModal}) => {
                             <Text><Icon name="adduser" size={25} color="white" /></Text>
                         </TouchableOpacity>
                     </View>
+                </View>
+                <View style={styles.buttonContainer}>
+                    <Pressable style={[styles.button, styles.cancel]} onPress={hideModal}>
+                        <Text>Cancel</Text>
+                    </Pressable>
+                    <Pressable style={[styles.button, globalStyles.button[mode]]} onPress={() => {}}>
+                        <Text style={globalStyles.whiteText}>Save</Text>
+                    </Pressable>
                 </View>
             </View>
         </Modal>
@@ -192,6 +204,24 @@ const styles = StyleSheet.create({
         top: 0,
         position: "absolute",
     },
+    buttonContainer: {
+        flexDirection: "row",
+        width: '100%'
+    },
+    button: {
+        flex: 1,
+        alignItems: 'center',
+        marginVertical: 24,
+        marginHorizontal: 36,
+        padding: 24,
+        borderRadius: 10,
+    },
+    cancel:{
+        backgroundColor: '#fff'
+    },
+    next: {
+        backgroundColor: '#ba4949'
+    }
 });
 
 export default Settings;

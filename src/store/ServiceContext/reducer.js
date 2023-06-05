@@ -10,6 +10,11 @@ const ServiceReducer = (state, action) => {
         ...state,
         isCountdownStarted: action.payload,
       };
+    case "user_settings":
+      return {
+        ...state,
+        userSettings: action.payload
+      };
 
     default:
       return state;

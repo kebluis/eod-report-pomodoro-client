@@ -5,17 +5,15 @@ import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import getEnvVars from "../../environment";
 import { AuthContext } from "../store/AuthContext";
+import axios from "axios";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-  const { token, storeToken, isAuthenticated } = useContext(AuthContext);
+  const { token, storeToken, isAuthenticated, userInfo, storeUserInfo } = useContext(AuthContext);
 
-  const { configIosClientId, configWebClientId, configAndroiClientId } =
+  const { configIosClientId, configWebClientId, configAndroiClientId, backEndApi } =
     getEnvVars();
-
-  const [userInfo, setUserInfo] = useState(null);
-
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: configWebClientId, // Your Expo client ID for Google Sign-In
     iosClientId: configIosClientId, // Your iOS client ID for Google Sign-In
@@ -32,15 +30,17 @@ export default function LoginScreen() {
     const user = await getLocalUser();
     if (!user) {
       if (response?.type === "success") {
-        storeToken(response.params.id_token);
+        await storeToken(response.params.id_token);
         await AsyncStorage.setItem(
           "@token",
           response.params.id_token
         );
-        isAuthenticated(!!response.params.id_token)
+        // isAuthenticated(!!response.params.id_token);
       }
-    } else {
-      setUserInfo(user);
+    }
+
+    if (response) {
+      await getUserInfo();
     }
   }
 
@@ -49,6 +49,57 @@ export default function LoginScreen() {
     if (!data) return null;
     return JSON.parse(data);
   };
+
+  const getUserInfo = async () => {
+    if (!token) return;
+    try {
+      // const response = await fetch(
+      //   `https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`,
+      // );
+
+      // const user = await response.json();
+      // await AsyncStorage.setItem("@user", JSON.stringify(user));
+      // isAuthenticated(!!user)
+      await axios.get(backEndApi + 'user',
+        {
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        }
+      ).then(async response => {
+        console.log('user response', response.data);
+        await storeUserInfo(response.data);
+        await isAuthenticated(!!token);
+      }).catch(error => {
+        console.log('error on user:', error);
+      });
+      // await setUserInfo();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // const setUserInfo = async () => {
+  // }
+
+  // const getUserSettings = async user => {
+  //   console.log('pota', user, token);
+  //   await axios.get(backEndApi + 'user-settings/' + user.id, {
+  //       headers: {
+  //           Authorization: "Bearer " + token
+  //       }
+  //   })
+  //   .then(async response => {
+  //       console.log('settings', response.data);
+  //       let newData = {
+  //         settings: response.data,
+  //         user: user
+  //       };
+  //       await storeUserInfo(newData);
+  //   }).catch(error => {
+  //     console.log('error on setttings:', error);
+  //   });
+  // }
 
   return (
     <View style={styles.container}>

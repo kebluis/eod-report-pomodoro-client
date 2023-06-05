@@ -11,6 +11,7 @@ import CountDown from "react-native-countdown-component";
 import * as Notifications from "expo-notifications";
 import { ServiceContext } from "../store/ServiceContext";
 import { BREAKS, NOTIFICATION, POMODORO, STOP } from "../constants/global";
+import { AuthContext } from "../store/AuthContext";
 
 // First, set the handler that will cause the notification
 // to show the alert
@@ -30,6 +31,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
     changeService,
     isCountdownStarted,
     toggleCountdown,
+    userSettings
   } = useContext(ServiceContext);
 
   const startTimer = useRef(null);
@@ -40,6 +42,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
   const [show, setShow] = useState(false);
   const [alarmSound, setAlarmSound] = useState(null);
   const [pause, setPause] = useState(true);
+  const [timeInSeconds, setTimeInSeconds] = useState(2);
 
   useEffect(() => {
     const init = async () => {
@@ -47,13 +50,51 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         require("../../assets/alarm.wav")
       );
       setAlarmSound(sound);
-    };
+      setTimer();
 
+    };
     init();
     return () => {
       if (!!alarmSound) alarmSound.unloadAsync();
     };
   }, []);
+
+
+  useEffect(() => {
+    setTimer();
+  }, [userSettings]);
+
+  useEffect(() => {
+    setTimer();
+  }, [serviceSelected]);
+
+  // useEffect(() => {
+  //   setTimer();
+  // });
+
+  const setTimer = async () => {
+    console.log('============d===============', serviceSelected == POMODORO, userSettings);
+      switch (serviceSelected) {
+        case POMODORO:
+          await setTimeInSeconds((userSettings.pomodoroTime || 0) * 60);
+          break;
+        case BREAKS.short:
+          await setTimeInSeconds((userSettings.shortBreak || 0) * 60);
+          break;
+        case BREAKS.long:
+          await setTimeInSeconds((userSettings.longBreak || 0) * 60);
+          break;
+        default:
+          await setTimeInSeconds(11);
+          break;
+      }
+    if (alarmSound) {
+      resetAlarm();
+    } else {
+      setTimerId(new Date().getTime().toString());
+    }
+    console.log('===========================+', timeInSeconds);
+  }
 
   const startCountdown = async () => {
     setPause(false);
@@ -147,7 +188,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         timeLabels={{ m: null, s: null }}
         showSeparator
         id={timerId}
-        until={10}
+        until={timeInSeconds}
         size={48}
         running={!pause && isCountdownStarted && !show}
         onFinish={onFinishCountDown}
