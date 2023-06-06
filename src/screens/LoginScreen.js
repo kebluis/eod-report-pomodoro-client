@@ -5,22 +5,23 @@ import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import getEnvVars from "../../environment";
 import { AuthContext } from "../store/AuthContext";
+import { UserContext } from "../store/UserContext";
+import { getUserInfo } from "../model/LoginModel";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const { token, storeToken, isAuthenticated } = useContext(AuthContext);
+  const { setUserInfo } = useContext(UserContext);
 
   const { configIosClientId, configWebClientId, configAndroiClientId } =
     getEnvVars();
-
-  const [userInfo, setUserInfo] = useState(null);
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     clientId: configWebClientId, // Your Expo client ID for Google Sign-In
     iosClientId: configIosClientId, // Your iOS client ID for Google Sign-In
     androidClientId: configAndroiClientId, // Your Android client ID for Google Sign-In
-    scopes: ['openid', 'profile', 'email']
+    scopes: ["openid", "profile", "email"],
   });
 
   useEffect(() => {
@@ -32,12 +33,12 @@ export default function LoginScreen() {
     const user = await getLocalUser();
     if (!user) {
       if (response?.type === "success") {
-        storeToken(response.params.id_token);
-        await AsyncStorage.setItem(
-          "@token",
-          response.params.id_token
-        );
-        isAuthenticated(!!response.params.id_token)
+        storeToken(response.params?.id_token);
+        await AsyncStorage.setItem("@token", response.params.id_token);
+        isAuthenticated(!!response.params.id_token);
+        
+        const userInfo = await getUserInfo();
+        setUserInfo(userInfo)
       }
     } else {
       setUserInfo(user);
@@ -52,18 +53,18 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            promptAsync();
-          }}
-        >
-          <Image
-            source={require("../../assets/google_logo.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.text}>Sign in with Google</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          promptAsync();
+        }}
+      >
+        <Image
+          source={require("../../assets/google_logo.png")}
+          style={styles.logo}
+        />
+        <Text style={styles.text}>Sign in with Google</Text>
+      </TouchableOpacity>
     </View>
   );
 }

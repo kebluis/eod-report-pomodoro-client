@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable, TextInput } from "react-native";
 import globalStyles from "../css/global";
 
 import { FontAwesome } from "@expo/vector-icons";
@@ -12,12 +12,7 @@ const TaskComponent = ({ id, taskName, isDone, removeTask, toggleTask }) => {
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        getBackground(),
-      ]}
-    >
+    <View style={[styles.container, getBackground()]}>
       <View style={[vPadding1, hPadding1, styles.wrapper]}>
         <View style={styles.wrapper}>
           <FontAwesome

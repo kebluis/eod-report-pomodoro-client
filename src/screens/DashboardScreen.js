@@ -8,8 +8,6 @@ import { ServiceContext, ServiceProvider } from "../store/ServiceContext";
 import Navigations from "../components/navigation/Navigations";
 import globalStyles from "../css/global";
 
-import { BREAKS, POMODORO } from "../constants/global";
-
 const DashboardScreen = ({ isLoading }) => {
   const { serviceSelected } = useContext(ServiceContext);
 
@@ -46,6 +44,6 @@ const styles = StyleSheet.create({
 
 export default () => (
   <ServiceProvider>
-    <DashboardScreen />
+      <DashboardScreen />
   </ServiceProvider>
 );

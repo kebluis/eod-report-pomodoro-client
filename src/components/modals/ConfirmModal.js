@@ -12,7 +12,7 @@ const ConfirmModal = ({
 }) => {
   return (
     <Modal animationType="slide" transparent visible={isVisible}>
-      <View style={styles.modalContent}>
+      <View style={globalStyles.modalContent}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>TIME'S UP</Text>
         </View>
@@ -32,15 +32,6 @@ const ConfirmModal = ({
 };
 
 const styles = StyleSheet.create({
-  modalContent: {
-    height: "50%",
-    width: "100%",
-    backgroundColor: "#25292e",
-    borderTopRightRadius: 18,
-    borderTopLeftRadius: 18,
-    position: "absolute",
-    bottom: 0,
-  },
   titleContainer: {
     height: "15%",
     backgroundColor: "#464C55",

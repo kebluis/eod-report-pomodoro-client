@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DashboardScreen from "./src/screens/DashboardScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import { AuthProvider, AuthContext } from "./src/store/AuthContext";
+import { UserProvider } from "./src/store/UserContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,8 @@ function App() {
 
 export default () => (
   <AuthProvider>
-    <App />
+    <UserProvider>
+      <App />
+    </UserProvider>
   </AuthProvider>
 );
