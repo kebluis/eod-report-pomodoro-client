@@ -6,6 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import getEnvVars from "../../environment";
 import { AuthContext } from "../store/AuthContext";
 import axios from "axios";
+import globalStyles from "../css/global";
+import { POMODORO } from "../constants/global";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -102,19 +104,20 @@ export default function LoginScreen() {
   // }
 
   return (
-    <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            promptAsync();
-          }}
-        >
-          <Image
-            source={require("../../assets/google_logo.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.text}>Sign in with Google</Text>
+    <View style={[styles.container, globalStyles.containerBg[POMODORO]]}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require("../../assets/logo.png")}
+          style={styles.image}
+        />
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.googleButton} onPress={() => {
+                promptAsync();
+              }}>
+          <Text style={styles.buttonText}>Sign in with Google</Text>
         </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -122,44 +125,31 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
   },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 3,
-  },
-  logo: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  card: {
-    borderWidth: 1,
-    borderRadius: 15,
-    padding: 15,
+  imageContainer: {
+    marginBottom: 30,
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
   },
-  text: {
-    color: "#757575",
-    fontWeight: "500",
+  buttonContainer: {
+    width: '80%',
+  },
+  googleButton: {
+    backgroundColor: '#db4437',
+    paddingVertical: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
+
