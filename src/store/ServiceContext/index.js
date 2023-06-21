@@ -19,8 +19,8 @@ export const ServiceProvider = ({ children }) => {
       payload,
     });
 
-  const toggleCountdown = (payload) =>
-    dispatch({ type: "toggle_countdown", payload });
+  const toggleCountdown = data =>
+    dispatch({ type: "toggle_countdown", payload: data });
 
   const storeUserSettings = data => {
     dispatch({

@@ -24,8 +24,6 @@ const TasklistComponent = () => {
 
   useEffect(() => {
       getAllTasks()
-    // if(!!tasks) {
-    // }
   }, [userInfo, token]);
 
   const getAllTasks = async () => {
@@ -115,9 +113,29 @@ const TasklistComponent = () => {
 
   }
 
+  const sendEmail = async () => {
+    await axios.post(backEndApi + 'email?userId=' + userInfo.id,
+      {},
+      {
+          headers: {
+              Authorization: "Bearer " + token
+          }
+      }
+    ).then(response => {
+      console.log('email sent ^^^^^^^^^^^^^^^^^^^^^^^^', response);
+    }).catch(error => {
+      console.log('error on task', error);
+    });
+  }
+
   return (
-    <View style={[wrapper, hPadding1, vMargin1]}>
-      <Text style={[styles.header, vPadding1, whiteText]}>Task List</Text>
+    <View style={[wrapper, hPadding1, vMargin1, fullWidth]}>
+      <View style={[fullWidth]}>
+        <Text style={[styles.header, vPadding1, whiteText, fullWidth]}>Task List</Text>
+        <Pressable style={[styles.done, hPadding1]} onPress={sendEmail}>
+          <Text>I'm Done</Text>
+        </Pressable>
+      </View>
       <FlatList
         style={fullWidth}
         data={tasks}
@@ -160,11 +178,6 @@ const TasklistComponent = () => {
     </View>
   );
 };
-      // <View style={styles.buttonContainer}>
-      //   <Pressable style={[styles.button, globalStyles.button[serviceSelected]]} onPress={() => {}}>
-      //       <Text style={globalStyles.whiteText}>Let's start our Day</Text>
-      //   </Pressable>
-      // </View>
 
 const styles = StyleSheet.create({
   header: {
@@ -204,6 +217,18 @@ const styles = StyleSheet.create({
   addTask: {
     width: "95%",
   },
+  done: {
+    backgroundColor: "white",
+    color: "black",
+    float: "right",
+    borderRadius: 5,
+    position: 'absolute',                                          
+    bottom: 10,
+    right: 10,
+    width: "30%",
+    alignItems: "center",
+    paddingVertical: 10,
+  }
 });
 
 export default TasklistComponent;

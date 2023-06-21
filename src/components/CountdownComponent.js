@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
 import { View, StyleSheet } from "react-native";
 import LottieView from "lottie-react-native";
-import { selectionAsync } from "expo-haptics";
+// import { selectionAsync } from "expo-haptics";
 import { Audio } from "expo-av";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -12,6 +12,7 @@ import * as Notifications from "expo-notifications";
 import { ServiceContext } from "../store/ServiceContext";
 import { BREAKS, NOTIFICATION, POMODORO, STOP } from "../constants/global";
 import { AuthContext } from "../store/AuthContext";
+import Timer from "./Timer";
 
 // First, set the handler that will cause the notification
 // to show the alert
@@ -50,7 +51,7 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
         require("../../assets/alarm.wav")
       );
       setAlarmSound(sound);
-      setTimer();
+      // setTimer();
 
     };
     init();
@@ -65,6 +66,8 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
   }, [userSettings, serviceSelected]);
 
   const setTimer = async () => {
+      setShow(false);
+      setPause(false);
       switch (serviceSelected) {
         case POMODORO:
           await setTimeInSeconds((userSettings.pomodoroTime || 0) * 60);
@@ -88,11 +91,13 @@ const CountdownComponent = ({ _minutes = 1, _seconds = 0 }) => {
 
   const startCountdown = async () => {
     setPause(false);
+    setShow(false);
     if (!isCountdownStarted) {
+      toggleCountdown(true);
       startTimer.current?.reset();
       doneTask.current?.reset();
-      selectionAsync();
-      toggleCountdown(true);
+      // selectionAsync();
+    console.log('==========================', pause, isCountdownStarted, show);
     }
     await Notifications.setNotificationChannelAsync("countdown-over", {
       name: NOTIFICATION.title,
