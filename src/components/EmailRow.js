@@ -14,7 +14,7 @@ import Icon from "@expo/vector-icons/AntDesign";
 const EmailRow = ({item, index, removeEmail, theme}) => (
     <View key={index} style={styles.container}>
         <Text style={[styles.emailListText, styles[theme]]}>
-            {item.email}
+            {item.emailAddress}
         </Text>
         <TouchableOpacity onPress={() => {removeEmail(index)}} style={styles.emailRemove}>
             <Text><Icon name="deleteuser" size={25} color="white" /></Text>

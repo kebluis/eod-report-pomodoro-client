@@ -35,7 +35,7 @@ const ServiceNavigatorComponent = () => {
           return (
             <TouchableOpacity
               style={[vPadding1, hPadding1, getButtonStyle(title)]}
-              onPress={() => !isCountdownStarted && changeService(title)}
+              onPress={async () => !isCountdownStarted && await changeService(title)}
             >
               <Text style={getTextColor(title, color)}>{title}</Text>
             </TouchableOpacity>
